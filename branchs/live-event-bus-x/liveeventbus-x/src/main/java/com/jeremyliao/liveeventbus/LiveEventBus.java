@@ -23,6 +23,16 @@ import com.jeremyliao.liveeventbus.core.ObservableConfig;
 
 public final class LiveEventBus {
 
+
+    /**
+     * 兼容低版本
+     *
+     * @return
+     */
+    public static LiveEventBusCore get() {
+        return LiveEventBusCore.get();
+    }
+
     /**
      * get observable by key with type
      *

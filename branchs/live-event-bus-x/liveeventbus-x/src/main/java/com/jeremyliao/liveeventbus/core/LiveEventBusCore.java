@@ -77,7 +77,7 @@ public final class LiveEventBusCore {
         bus = new HashMap<>();
         observableConfigs = new HashMap<>();
         lifecycleObserverAlwaysActive = true;
-        autoClear = false;
+        autoClear = true;
         logger = new LoggerManager(new DefaultLogger());
         receiver = new LebIpcReceiver();
         registerReceiver();
@@ -409,6 +409,7 @@ public final class LiveEventBusCore {
         private void observeForeverInternal(@NonNull Observer<T> observer) {
             ObserverWrapper<T> observerWrapper = new ObserverWrapper<>(observer);
             observerWrapper.preventNextEvent = liveData.getVersion() > ExternalLiveData.START_VERSION;
+            observerWrapper = putIfAbsent(observerMap, observer, observerWrapper);
             observerMap.put(observer, observerWrapper);
             liveData.observeForever(observerWrapper);
             logger.log(Level.INFO, "observe forever observer: " + observerWrapper + "(" + observer + ")"
@@ -416,8 +417,18 @@ public final class LiveEventBusCore {
         }
 
         @MainThread
+        private @NonNull
+        ObserverWrapper<T> putIfAbsent(@NonNull Map<Observer, ObserverWrapper<T>> observerMap,
+                                       @NonNull Observer<T> observer,
+                                       @NonNull ObserverWrapper<T> observerWrapper) {
+            ObserverWrapper<T> ret = observerMap.get(observer);
+            return (null == ret) ? observerWrapper : ret;
+        }
+
+        @MainThread
         private void observeStickyForeverInternal(@NonNull Observer<T> observer) {
             ObserverWrapper<T> observerWrapper = new ObserverWrapper<>(observer);
+            observerWrapper = putIfAbsent(observerMap, observer, observerWrapper);
             observerMap.put(observer, observerWrapper);
             liveData.observeForever(observerWrapper);
             logger.log(Level.INFO, "observe sticky forever observer: " + observerWrapper + "(" + observer + ")"

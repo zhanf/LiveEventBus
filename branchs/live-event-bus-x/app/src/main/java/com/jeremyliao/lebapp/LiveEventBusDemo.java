@@ -64,6 +64,9 @@ public class LiveEventBusDemo extends AppCompatActivity {
                 .get(KEY_TEST_OBSERVE_FOREVER, String.class)
                 .observeForever(observer);
         LiveEventBus
+                .get(KEY_TEST_OBSERVE_FOREVER, String.class)
+                .observeForever(observer);
+        LiveEventBus
                 .get(KEY_TEST_CLOSE_ALL_PAGE, Boolean.class)
                 .observe(this, new Observer<Boolean>() {
                     @Override
